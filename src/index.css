@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-[#030712] text-white font-sans antialiased;
+}
+
+.glow-card {
+  box-shadow: 0 0 40px rgba(0, 240, 255, 0.12);
+  background: rgba(10, 16, 36, 0.9);
+  border: 1px solid rgba(0, 255, 255, 0.08);
+}
+
+.neon-text {
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.7);
+}
