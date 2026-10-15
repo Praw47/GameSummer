@@ -1,4 +1,14 @@
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'ws://localhost:8000/ws/notifications/'
+const apiUrl = new URL(
+  import.meta.env.VITE_API_BASE_URL ||
+    (import.meta.env.DEV
+      ? import.meta.env.VITE_API_BASE || 'http://localhost:8000/api'
+      : ''),
+)
+apiUrl.protocol = apiUrl.protocol === 'https:' ? 'wss:' : 'ws:'
+apiUrl.pathname = '/ws/notifications/'
+apiUrl.search = ''
+apiUrl.hash = ''
+const SOCKET_URL = apiUrl.toString()
 
 export function createSocket(onMessage, onOpen) {
   const socket = new WebSocket(SOCKET_URL)

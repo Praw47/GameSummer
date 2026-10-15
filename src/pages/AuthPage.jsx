@@ -3,6 +3,27 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useAuth } from '../contexts/AuthContext'
 
+function getAuthErrorMessage(error) {
+  const responseData = error.response?.data
+
+  if (typeof responseData?.detail === 'string') {
+    return responseData.detail
+  }
+
+  if (responseData && typeof responseData === 'object') {
+    const messages = Object.entries(responseData).flatMap(([field, value]) =>
+      (Array.isArray(value) ? value : [value]).map((message) => `${field}: ${message}`)
+    )
+    if (messages.length) return messages.join(' ')
+  }
+
+  if (error.request && !error.response) {
+    return 'Could not reach the server. Check that the backend is running and try again.'
+  }
+
+  return error.message || 'Unable to authenticate. Please try again.'
+}
+
 export default function AuthPage() {
   const { login, register } = useAuth()
   const [mode, setMode] = useState('login')
@@ -24,7 +45,7 @@ export default function AuthPage() {
         setMode('login')
       }
     } catch (error) {
-      toast.error('Unable to authenticate. Check credentials.')
+      toast.error(getAuthErrorMessage(error))
     }
   }
 
@@ -38,6 +59,8 @@ export default function AuthPage() {
             <label className="text-sm text-slate-300">Username</label>
             <input
               name="username"
+              autoComplete="username"
+              required
               value={form.username}
               onChange={handleChange}
               className="mt-2 w-full rounded-3xl border border-white/10 bg-[#020917] px-4 py-3 text-white outline-none focus:border-cyan-400"
@@ -47,7 +70,9 @@ export default function AuthPage() {
             <div>
               <label className="text-sm text-slate-300">Email</label>
               <input
+                type="email"
                 name="email"
+                autoComplete="email"
                 value={form.email}
                 onChange={handleChange}
                 className="mt-2 w-full rounded-3xl border border-white/10 bg-[#020917] px-4 py-3 text-white outline-none focus:border-cyan-400"
@@ -59,6 +84,8 @@ export default function AuthPage() {
             <input
               type="password"
               name="password"
+              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+              required
               value={form.password}
               onChange={handleChange}
               className="mt-2 w-full rounded-3xl border border-white/10 bg-[#020917] px-4 py-3 text-white outline-none focus:border-cyan-400"
